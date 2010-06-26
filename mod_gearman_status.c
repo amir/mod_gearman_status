@@ -1,30 +1,15 @@
 /*
- **  Gearman Status Module.
- **
- **  To play with this module first compile it into a DSO
- **  file and install it into Apache's modules directory
- **  by running:
- **
- **    $ apxs -c -i mod_gearman_status.c
- **
- **  Then activate it in Apache's apache2.conf file for instance
- **  for the URL /gearman-status in as follows:
- **
- **    #   apache2.conf
- **    LoadModule gearman_status_module modules/mod_gearman_status.so
- **    <Location /gearman-status>
- **    SetHandler gearman_status
- **    </Location>
- **
- **  Then after restarting Apache via
- **
- **    $ apachectl restart
- **
- **  you immediately can request the URL /gearman-status and watch for the
- **  output of this module. This can be achieved for instance via:
- **
- **    $ lynx -mime_header http://localhost/gearman-status
- **
+ * mod_gearman_status
+ *
+ * Copyright (c) 2010, Amir Mohammad Saied <amirsaied@gmail.com>
+ *
+ * This source file is subject to the New BSD license, That is bundled
+ * with this package in the file LICENSE, and is available through
+ * the world-wide-web at
+ * http://www.opensource.org/licenses/bsd-license.php
+ * If you did not receive a copy of the new BSDlicense and are unable
+ * to obtain it through the world-wide-web, please send a note to
+ * amirsaied@gmail.com so we can mail you a copy immediately.
  */
 
 #include "httpd.h"

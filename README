@@ -1,1 +1,29 @@
 Gearman status Apache module
+
+To play with this module first compile it into a DSO
+file and install it into Apache's modules directory
+by running:
+
+  $ apxs -c -i mod_gearman_status.c
+
+Then activate it in Apache's apache2.conf file for instance
+for the URL /gearman-status in as follows:
+
+  LoadModule gearman_status_module modules/mod_gearman_status.so
+  <Location /gearman-status>
+    SetHandler gearman_status
+  </Location>
+
+Then after restarting Apache via
+
+  $ apachectl restart
+
+you immediately can request the URL /gearman-status and watch for the
+output of this module. This can be achieved for instance via:
+
+  $ lynx -mime_header http://localhost/gearman-status
+
+By default this module tries to connect to localhost:4730 in order to retrieve
+Various information. There are also two per-server directives which let you set
+The hostname of the server running gearmand, and the gearmand port. Directives
+Are GearmanHostname, and GearmanPort.

@@ -1,0 +1,5 @@
+.libs/
+mod_gearman_status.la
+mod_gearman_status.lo
+mod_gearman_status.o
+mod_gearman_status.slo

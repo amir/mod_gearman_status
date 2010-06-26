@@ -1,8 +1,8 @@
-/* 
+/*
  **  Gearman Status Module.
  **
  **  To play with this module first compile it into a DSO
- **  file and install it into Apache's modules directory 
+ **  file and install it into Apache's modules directory
  **  by running:
  **
  **    $ apxs -c -i mod_gearman_status.c
@@ -23,9 +23,9 @@
  **  you immediately can request the URL /gearman-status and watch for the
  **  output of this module. This can be achieved for instance via:
  **
- **    $ lynx -mime_header http://localhost/gearman-status 
+ **    $ lynx -mime_header http://localhost/gearman-status
  **
- */ 
+ */
 
 #include "httpd.h"
 #include "http_config.h"
@@ -142,7 +142,7 @@ static int gearman_status_handler(request_rec *r)
     if (strcmp(r->handler, "gearman_status")) {
         return DECLINED;
     }
-    r->content_type = "text/html";      
+    r->content_type = "text/html";
 
     socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     name.sin_family = AF_INET;
@@ -156,8 +156,10 @@ static int gearman_status_handler(request_rec *r)
 
     if (!r->header_only) {
         ap_rputs(DOCTYPE_HTML_3_2
-                "<html>\n\t<head>\n\t\t<title>Gearman Status</title>\n\t</head>\n<body>\n",
+                "<html>\n<head>\n<title>Gearman Status</title>\n",
                 r);
+        ap_rputs("<style type='text/css'>body{font-family: 'Trebuchet MS';color: #444;background: #f9f9f9;}h1{background: #eee;border: 1px solid #ddd;padding: 3px;text-shadow: #ccc 1px 1px 0;color: #756857;text-transform:uppercase;}h2{padding: 3px;text-shadow: #ccc 1px 1px 0;color: #ACA39C;text-transform:uppercase;border-bottom: 1px dotted #ddd;display: inline-block;}hr{color: transparent;}table{width: 100%;border: 1px solid #ddd;border-spacing:0px;}table th{border-bottom: 1px dotted #ddd;background: #eee;padding: 5px;font-size: 15px;text-shadow: #fff 1px 1px 0;}table td{text-align: center;padding: 5px;font-size: 13px;color: #444;text-shadow: #ccc 1px 1px 0;}</style>", r);
+        ap_rputs("</head>\n<body>\n", r);
         if (status) {
             ap_rprintf(r, "<h1>Gearman Server Status for %s</h1>", hostname);
             get_version(socket_fd, r);
@@ -183,7 +185,7 @@ static void gearman_status_register_hooks(apr_pool_t *p)
 
 /* Dispatch list for API hooks */
 module AP_MODULE_DECLARE_DATA gearman_status_module = {
-    STANDARD20_MODULE_STUFF, 
+    STANDARD20_MODULE_STUFF,
     NULL,                  /* create per-dir    config structures */
     NULL,                  /* merge  per-dir    config structures */
     NULL,                  /* create per-server config structures */

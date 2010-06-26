@@ -40,6 +40,13 @@
 #include <errno.h>
 #include <string.h>
 
+module AP_MODULE_DECLARE_DATA gearman_status_module;
+
+typedef struct {
+    const char *hostname;
+    int port;
+} mod_gearman_status_config;
+
 enum task {
     TASK_STATUS  = 0,
     TASK_WORKERS = 1
@@ -135,9 +142,11 @@ static int gearman_status_handler(request_rec *r)
     struct hostent* hostinfo;
     const char *hostname;
     int port, status = 1;
+    mod_gearman_status_config *cfg =
+        ap_get_module_config(r->server->module_config, &gearman_status_module);
 
-    hostname = strdup("localhost");
-    port = 4730;
+    hostname = strdup(cfg->hostname);
+    port = cfg->port;
 
     if (strcmp(r->handler, "gearman_status")) {
         return DECLINED;
@@ -170,7 +179,6 @@ static int gearman_status_handler(request_rec *r)
         } else {
             ap_rputs("Error connecting to Gearman server", r);
         }
-        ap_rputs(ap_psignature("<hr />\n",r), r);
         ap_rputs("</body></html>", r);
     }
     shutdown(socket_fd, 2);
@@ -183,14 +191,66 @@ static void gearman_status_register_hooks(apr_pool_t *p)
     ap_hook_handler(gearman_status_handler, NULL, NULL, APR_HOOK_MIDDLE);
 }
 
+static const char *set_mod_gearman_status_hostname(
+        cmd_parms *params, void *mconfig, const char *arg
+) {
+    mod_gearman_status_config *cfg =
+        ap_get_module_config(params->server->module_config, &gearman_status_module);
+
+    cfg->hostname = (char *)arg;
+
+    return NULL;
+}
+
+static const char *set_mod_gearman_status_port(
+        cmd_parms *params, void *mconfig, const char *arg
+) {
+    mod_gearman_status_config *cfg =
+        ap_get_module_config(params->server->module_config, &gearman_status_module);
+
+    cfg->port = atoi((char *)arg);
+
+    return NULL;
+}
+
+static const command_rec gearman_status_commands[] =
+{
+    AP_INIT_TAKE1(
+        "GearmanHostname",
+        set_mod_gearman_status_hostname,
+        NULL,
+        RSRC_CONF,
+        "GearmanHostname <string> -- Gearman hostname."
+    ),
+    AP_INIT_TAKE1(
+        "GearmanPort",
+        set_mod_gearman_status_port,
+        NULL,
+        RSRC_CONF,
+        "GearmanPort <integer> -- Gearman port."
+    ),
+    {NULL}
+};
+
+static void *create_mod_gearman_status_config(apr_pool_t *p, server_rec *s)
+{
+    mod_gearman_status_config *cfg;
+
+    cfg = (mod_gearman_status_config *) apr_pcalloc(p, sizeof(mod_gearman_status_config));
+
+    cfg->hostname = strdup("localhost");
+    cfg->port = 4730;
+
+    return (void *) cfg;
+}
+
 /* Dispatch list for API hooks */
 module AP_MODULE_DECLARE_DATA gearman_status_module = {
     STANDARD20_MODULE_STUFF,
-    NULL,                  /* create per-dir    config structures */
-    NULL,                  /* merge  per-dir    config structures */
-    NULL,                  /* create per-server config structures */
-    NULL,                  /* merge  per-server config structures */
-    NULL,                  /* table of config file commands       */
-    gearman_status_register_hooks  /* register hooks                      */
+    NULL,                               /* create per-dir    config structures */
+    NULL,                               /* merge  per-dir    config structures */
+    create_mod_gearman_status_config,   /* create per-server config structures */
+    NULL,                               /* merge  per-server config structures */
+    gearman_status_commands,            /* table of config file commands       */
+    gearman_status_register_hooks       /* register hooks                      */
 };
-

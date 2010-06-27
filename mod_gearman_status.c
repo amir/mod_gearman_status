@@ -144,7 +144,9 @@ static int gearman_status_handler(request_rec *r)
     name.sin_addr = *((struct in_addr *) hostinfo->h_addr);
     name.sin_port = htons(port);
     if (connect(socket_fd, &name, sizeof(struct sockaddr_in)) < 0) {
-        ap_log_error(APLOG_MARK, APLOG_ERR, 0, NULL, "Error connecting to Gearman server");
+        ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
+                "Error connecting to Gearman server %s:%d", hostname, port
+        );
         status = 0;
     }
 

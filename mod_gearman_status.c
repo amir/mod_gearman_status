@@ -137,6 +137,7 @@ static int gearman_status_handler(request_rec *r)
         return DECLINED;
     }
     r->content_type = "text/html";
+    r->no_cache = 1;
 
     socket_fd = socket(PF_INET, SOCK_STREAM, 0);
     name.sin_family = AF_INET;

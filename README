@@ -27,3 +27,5 @@ By default this module tries to connect to localhost:4730 in order to retrieve
 Various information. There are also two per-server directives which let you set
 The hostname of the server running gearmand, and the gearmand port. Directives
 Are GearmanHostname, and GearmanPort.
+
+Nginx version: https://github.com/amir/ngx_http_gearman_status_module
